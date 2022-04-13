@@ -1,0 +1,28 @@
+ID: S_HANA
+_schema-version: '2.1'
+version: 0.0.2
+resources:
+  - name: hdi_DB_MODULE
+    parameters:
+      config:
+        schema: SAPJAVA1
+    properties:
+      hdi-container-name: '${service-name}'
+    type: com.sap.xs.hdi-container
+  - name: cross-container-service-mii-db
+    type: org.cloudfoundry.existing-service
+    description: Connect to the Netweaver Java HANA database to access MII / OEE Schema
+    parameters:
+      service-name: CROSS_SCHEMA_SERVICE_SAPJAVA1
+    properties:
+      service-name-alias: '${service-name}'
+modules:
+  - name: DB_MODULE
+    type: hdb
+    path: DB_MODULE
+    requires:
+      - name: hdi_DB_MODULE
+      - name: cross-container-service-mii-db
+        properties:
+          key: ServiceName_1
+          service: '~{service-name-alias}'
